@@ -1,0 +1,14 @@
+version: '3.7'
+services:
+
+  postgres-1:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=database
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    hostname:
+      localhost
+    ports:
+      - '6006:5432'
+    container_name: "postgres-dev"
