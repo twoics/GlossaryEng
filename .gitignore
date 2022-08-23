@@ -456,3 +456,4 @@ $RECYCLE.BIN/
 # GlossaryEng 
 ## Api 
 GlossaryEngApi/appsettings.Development.json
+GlossaryEng.Auth/appsettings.Development.json
