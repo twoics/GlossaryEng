@@ -9,8 +9,8 @@ namespace GlossaryEng.Auth.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private UserManager<UserDb> _userManager;
-    private IMapper _mapper;
+    private readonly UserManager<UserDb> _userManager;
+    private readonly IMapper _mapper;
     
     public AuthController(UserManager<UserDb> userManager, IMapper mapper)
     {
