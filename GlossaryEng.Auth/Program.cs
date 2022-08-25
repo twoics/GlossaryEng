@@ -20,7 +20,9 @@ builder.Services.AddDbContext<UsersDbContext>(
 
 
 // Add only user management system
-builder.Services.AddIdentityCore<UserDb>()
+builder.Services.AddIdentityCore<UserDb>(options =>
+        options.User.RequireUniqueEmail = true
+    )
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<UsersDbContext>();
 

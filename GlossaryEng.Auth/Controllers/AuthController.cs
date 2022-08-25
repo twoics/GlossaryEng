@@ -11,7 +11,7 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<UserDb> _userManager;
     private readonly IMapper _mapper;
-    
+
     public AuthController(UserManager<UserDb> userManager, IMapper mapper)
     {
         _userManager = userManager;
@@ -36,5 +36,31 @@ public class AuthController : ControllerBase
         }
 
         return Ok("User is successfully created");
+    }
+
+    [HttpPost]
+    [Route("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        UserDb user = await _userManager.FindByEmailAsync(loginRequest.Email);
+
+        if (user is null)
+        {
+            return Unauthorized("User doesn't found");
+        }
+
+        bool isValidPassword = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
+
+        if (!isValidPassword)
+        {
+            return Unauthorized("Wrong password");
+        }
+        
+        return Ok("Welcome");
     }
 }
