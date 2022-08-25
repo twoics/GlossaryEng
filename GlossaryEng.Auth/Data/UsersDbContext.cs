@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GlossaryEng.Auth.Data;
 
-public class UsersDbContext : IdentityDbContext<IdentityUser>
+public class UsersDbContext : IdentityDbContext<UserDb>
 {
     public UsersDbContext(DbContextOptions<UsersDbContext> options) : base(options)
     {

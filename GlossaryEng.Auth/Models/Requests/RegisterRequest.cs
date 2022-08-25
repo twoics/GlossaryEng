@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace GlossaryEng.Auth.Models.Request;
+namespace GlossaryEng.Auth.Models.Requests;
 
 public class RegisterRequest
 {

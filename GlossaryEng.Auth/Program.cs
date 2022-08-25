@@ -3,13 +3,12 @@ using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using IdentityUser = GlossaryEng.Auth.Data.Entities.IdentityUser;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddAutoMapper(typeof(AppMappingProfile));
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 string databaseConnection = builder.Environment.IsDevelopment()
     ? builder.Configuration.GetConnectionString("DevAuthDatabase")
@@ -21,7 +20,7 @@ builder.Services.AddDbContext<UsersDbContext>(
 
 
 // Add only user management system
-builder.Services.AddIdentityCore<IdentityUser>()
+builder.Services.AddIdentityCore<UserDb>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<UsersDbContext>();
 

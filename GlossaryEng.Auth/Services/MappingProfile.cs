@@ -1,14 +1,14 @@
 using AutoMapper;
 using GlossaryEng.Auth.Data.Entities;
-using GlossaryEng.Auth.Models.Request;
+using GlossaryEng.Auth.Models.Requests;
 
 namespace GlossaryEng.Auth.Services;
 
-public class AppMappingProfile : Profile
+public class MappingProfile : Profile
 {
-    public AppMappingProfile()
+    public MappingProfile()
     {
-        CreateMap<RegisterRequest, IdentityUser>()
+        CreateMap<RegisterRequest, UserDb>()
             // Map User Name
             .ForMember(dest => dest.UserName,
                 opt
