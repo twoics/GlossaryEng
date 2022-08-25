@@ -2,6 +2,7 @@ using GlossaryEng.Auth.Data;
 using GlossaryEng.Auth.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using IdentityUser = GlossaryEng.Auth.Data.Entities.IdentityUser;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,15 +12,13 @@ string databaseConnection = builder.Environment.IsDevelopment()
     ? builder.Configuration.GetConnectionString("DevAuthDatabase")
     : "SomeConnectionString";
 
-Console.WriteLine(databaseConnection);
-
 // Add DataBase connection
 builder.Services.AddDbContext<UsersDbContext>(
     options => options.UseNpgsql(databaseConnection));
 
 
 // Add only user management system
-builder.Services.AddIdentityCore<User>()
+builder.Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<UsersDbContext>();
 
