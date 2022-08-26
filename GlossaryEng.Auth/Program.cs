@@ -1,5 +1,6 @@
 using GlossaryEng.Auth.Data;
 using GlossaryEng.Auth.Data.Entities;
+using GlossaryEng.Auth.Models.RefreshTokensRepository;
 using GlossaryEng.Auth.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,8 @@ builder.Services.AddIdentityCore<UserDb>(options =>
     )
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<UsersDbContext>();
+
+builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
 
 var app = builder.Build();
 
