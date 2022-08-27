@@ -1,20 +1,51 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using GlossaryEng.Auth.Data.Entities;
+using GlossaryEng.Auth.Models.AuthConfiguration;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace GlossaryEng.Auth.Models.TokenGenerator;
 
 public class TokenGenerator : ITokenGenerator
 {
-    public string GenerateAccessToken()
+    private AuthenticationConfiguration _configuration;
+
+    public TokenGenerator(AuthenticationConfiguration configuration)
+        => _configuration = configuration;
+
+    public string GenerateAccessToken(UserDb user)
     {
-        throw new NotImplementedException();
+        List<Claim> claims = new List<Claim>
+        {
+            new ("id", user.Id),
+            new (ClaimTypes.Email, user.Email),
+            new (ClaimTypes.Name, user.UserName),
+            // Todo add role claim
+        };
+        
+        DateTime expireTime = DateTime.UtcNow.AddMinutes(_configuration.AccessTokenExpireMinutes);
+        
+        string token = GenerateToken(
+            _configuration.AccessTokenSecret,
+            _configuration.Issuer,
+            _configuration.Audience,
+            expireTime,
+            claims);
+        
+        return token;
     }
 
-    public string GenerateRefreshToken()
+    public string GenerateRefreshToken(UserDb user)
     {
-        throw new NotImplementedException();
+        DateTime expireTime = DateTime.UtcNow.AddMinutes(_configuration.RefreshTokenExpireMinutes);
+        
+        return GenerateToken(
+            _configuration.RefreshTokenSecret,
+            _configuration.Issuer,
+            _configuration.Audience,
+            expireTime);
     }
 
     private string GenerateToken(
