@@ -1,7 +1,6 @@
-using System.Security.Claims;
 using GlossaryEng.Auth.Data.Entities;
 
-namespace GlossaryEng.Auth.Models.TokenGenerator;
+namespace GlossaryEng.Auth.Services.TokenGenerator;
 
 public interface ITokenGenerator
 {

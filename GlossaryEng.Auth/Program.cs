@@ -2,9 +2,9 @@ using GlossaryEng.Auth.Data;
 using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Exceptions;
 using GlossaryEng.Auth.Models.AuthConfiguration;
-using GlossaryEng.Auth.Models.RefreshTokensRepository;
-using GlossaryEng.Auth.Models.TokenGenerator;
-using GlossaryEng.Auth.Services;
+using GlossaryEng.Auth.Services.Mapper;
+using GlossaryEng.Auth.Services.RefreshTokensRepository;
+using GlossaryEng.Auth.Services.TokenGenerator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

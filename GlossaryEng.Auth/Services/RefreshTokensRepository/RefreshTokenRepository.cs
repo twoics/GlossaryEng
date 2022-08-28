@@ -3,7 +3,7 @@ using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Models.Requests;
 using Microsoft.EntityFrameworkCore;
 
-namespace GlossaryEng.Auth.Models.RefreshTokensRepository;
+namespace GlossaryEng.Auth.Services.RefreshTokensRepository;
 
 public class RefreshTokenRepository : IRefreshTokenRepository
 {

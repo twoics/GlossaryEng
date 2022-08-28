@@ -1,7 +1,7 @@
 using AutoMapper;
 using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Models.Requests;
-using GlossaryEng.Auth.Models.TokenGenerator;
+using GlossaryEng.Auth.Services.TokenGenerator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

@@ -5,7 +5,7 @@ using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Models.AuthConfiguration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace GlossaryEng.Auth.Models.TokenGenerator;
+namespace GlossaryEng.Auth.Services.TokenGenerator;
 
 public class TokenGenerator : ITokenGenerator
 {

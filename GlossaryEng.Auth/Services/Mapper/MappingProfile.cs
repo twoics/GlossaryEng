@@ -2,7 +2,7 @@ using AutoMapper;
 using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Models.Requests;
 
-namespace GlossaryEng.Auth.Services;
+namespace GlossaryEng.Auth.Services.Mapper;
 
 public class MappingProfile : Profile
 {
