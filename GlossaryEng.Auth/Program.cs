@@ -5,6 +5,7 @@ using GlossaryEng.Auth.Models.AuthConfiguration;
 using GlossaryEng.Auth.Services.Mapper;
 using GlossaryEng.Auth.Services.RefreshTokensRepository;
 using GlossaryEng.Auth.Services.TokenGenerator;
+using GlossaryEng.Auth.Services.TokenValidator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,6 +44,7 @@ builder.Configuration.Bind("Authentication", authenticationConfiguration);
 builder.Services.AddSingleton(authenticationConfiguration);
 builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddTransient<ITokenGenerator, TokenGenerator>();
+builder.Services.AddTransient<ITokenValidator, TokenValidator>();
 
 var app = builder.Build();
 
