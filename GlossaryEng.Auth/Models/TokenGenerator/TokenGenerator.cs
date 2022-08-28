@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Models.AuthConfiguration;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace GlossaryEng.Auth.Models.TokenGenerator;

@@ -1,6 +1,7 @@
 using AutoMapper;
 using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Models.Requests;
+using GlossaryEng.Auth.Models.TokenGenerator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +12,13 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<UserDb> _userManager;
     private readonly IMapper _mapper;
-
-    public AuthController(UserManager<UserDb> userManager, IMapper mapper)
+    private readonly ITokenGenerator _tokenGenerator;
+    
+    public AuthController(UserManager<UserDb> userManager, IMapper mapper, ITokenGenerator tokenGenerator)
     {
         _userManager = userManager;
         _mapper = mapper;
+        _tokenGenerator = tokenGenerator;
     }
 
     [HttpPost]
