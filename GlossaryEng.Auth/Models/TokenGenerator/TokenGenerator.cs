@@ -18,9 +18,9 @@ public class TokenGenerator : ITokenGenerator
     {
         List<Claim> claims = new List<Claim>
         {
-            new ("id", user.Id),
-            new (ClaimTypes.Email, user.Email),
-            new (ClaimTypes.Name, user.UserName),
+            new (JwtRegisteredClaimNames.Sub, user.Id),
+            new (JwtRegisteredClaimNames.Email, user.Email),
+            new (JwtRegisteredClaimNames.Name, user.UserName),
             // Todo add role claim
         };
         
