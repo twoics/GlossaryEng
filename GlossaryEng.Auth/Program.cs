@@ -1,5 +1,6 @@
 using GlossaryEng.Auth.Data;
 using GlossaryEng.Auth.Data.Entities;
+using GlossaryEng.Auth.Exceptions;
 using GlossaryEng.Auth.Models.AuthConfiguration;
 using GlossaryEng.Auth.Models.RefreshTokensRepository;
 using GlossaryEng.Auth.Models.TokenGenerator;
@@ -16,6 +17,12 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 string databaseConnection = builder.Environment.IsDevelopment()
     ? builder.Configuration.GetConnectionString("DevAuthDatabase")
     : "SomeConnectionString";
+
+if (string.IsNullOrEmpty(databaseConnection))
+{
+    throw new ConfigureStringException(
+        "The db connection string contains an empty string, or has the value null");
+}
 
 // Add DataBase connection
 builder.Services.AddDbContext<UsersDbContext>(
