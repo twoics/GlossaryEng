@@ -38,8 +38,14 @@ builder.Services.AddIdentityCore<UserDb>(options =>
     .AddEntityFrameworkStores<UsersDbContext>();
 
 // Add auth configuration
-AuthenticationConfiguration authenticationConfiguration = new AuthenticationConfiguration();
-builder.Configuration.Bind("Authentication", authenticationConfiguration);
+AuthenticationConfiguration authenticationConfiguration
+    = builder.Configuration.GetSection("Authentication").Get<AuthenticationConfiguration>();
+
+if (authenticationConfiguration is null)
+{
+    throw new ConfigureStringException(
+        "Unable to create an AuthenticationConfiguration instance from the configuration. Check fields and try again");
+}
 
 builder.Services.AddSingleton(authenticationConfiguration);
 builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
