@@ -64,6 +64,6 @@ public class AuthController : ControllerBase
             return Unauthorized("Wrong password");
         }
         
-        return Ok("Welcome");
+        return Ok(await _authenticator.AuthenticateUserAsync(user));
     }
 }

@@ -54,8 +54,8 @@ if (authenticationConfiguration is null)
 builder.Services.AddSingleton(authenticationConfiguration);
 builder.Services.AddSingleton<ITokenGenerator, TokenGenerator>();
 builder.Services.AddSingleton<ITokenValidator, TokenValidator>();
-builder.Services.AddSingleton<IAuthenticator, Authenticator>();
 
+builder.Services.AddTransient<IAuthenticator, Authenticator>();
 builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
 
 

@@ -5,5 +5,5 @@ namespace GlossaryEng.Auth.Services.Authenticator;
 
 public interface IAuthenticator
 {
-    AuthenticatedUserResponse AuthenticateUser(UserDb user);
+    Task<AuthenticatedUserResponse> AuthenticateUserAsync(UserDb user);
 }
