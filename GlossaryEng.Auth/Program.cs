@@ -2,6 +2,7 @@ using GlossaryEng.Auth.Data;
 using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Exceptions;
 using GlossaryEng.Auth.Models.AuthConfiguration;
+using GlossaryEng.Auth.Services.Authenticator;
 using GlossaryEng.Auth.Services.Mapper;
 using GlossaryEng.Auth.Services.RefreshTokensRepository;
 using GlossaryEng.Auth.Services.TokenGenerator;
@@ -51,6 +52,7 @@ builder.Services.AddSingleton(authenticationConfiguration);
 builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddTransient<ITokenGenerator, TokenGenerator>();
 builder.Services.AddTransient<ITokenValidator, TokenValidator>();
+builder.Services.AddSingleton<IAuthenticator, Authenticator>();
 
 var app = builder.Build();
 
