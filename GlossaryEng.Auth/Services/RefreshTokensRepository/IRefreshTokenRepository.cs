@@ -5,7 +5,7 @@ namespace GlossaryEng.Auth.Services.RefreshTokensRepository;
 
 public interface IRefreshTokenRepository
 {
-    Task Create(RefreshToken refreshToken);
+    Task CreateToken(RefreshToken refreshToken);
 
-    Task Delete(RefreshRequest refreshRequest);
+    Task DeleteTokenIfExist(UserDb user);
 }
