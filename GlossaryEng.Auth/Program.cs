@@ -38,6 +38,7 @@ builder.Services.AddIdentityCore<UserDb>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<UsersDbContext>();
 
+
 // Add auth configuration
 AuthenticationConfiguration authenticationConfiguration
     = builder.Configuration.GetSection("Authentication").Get<AuthenticationConfiguration>();
@@ -48,11 +49,15 @@ if (authenticationConfiguration is null)
         "Unable to create an AuthenticationConfiguration instance from the configuration. Check fields and try again");
 }
 
+
+// Dependency injection
 builder.Services.AddSingleton(authenticationConfiguration);
-builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
-builder.Services.AddTransient<ITokenGenerator, TokenGenerator>();
-builder.Services.AddTransient<ITokenValidator, TokenValidator>();
+builder.Services.AddSingleton<ITokenGenerator, TokenGenerator>();
+builder.Services.AddSingleton<ITokenValidator, TokenValidator>();
 builder.Services.AddSingleton<IAuthenticator, Authenticator>();
+
+builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
+
 
 var app = builder.Build();
 
