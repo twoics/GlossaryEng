@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Models.AuthConfiguration;
+using GlossaryEng.Auth.Models.Token;
 using Microsoft.IdentityModel.Tokens;
 
 namespace GlossaryEng.Auth.Services.TokenGenerator;
@@ -14,7 +15,7 @@ public class TokenGenerator : ITokenGenerator
     public TokenGenerator(AuthenticationConfiguration configuration)
         => _configuration = configuration;
 
-    public string GenerateAccessToken(UserDb user)
+    public TokenAccess GenerateAccessToken(UserDb user)
     {
         List<Claim> claims = new List<Claim>
         {
@@ -32,19 +33,29 @@ public class TokenGenerator : ITokenGenerator
             _configuration.Audience,
             expireTime,
             claims);
-        
-        return token;
+
+        return new TokenAccess
+        {
+            TokenValue = token,
+            ExpireTime = expireTime
+        };
     }
 
-    public string GenerateRefreshToken(UserDb user)
+    public TokenRefresh GenerateRefreshToken(UserDb user)
     {
         DateTime expireTime = DateTime.UtcNow.AddMinutes(_configuration.RefreshTokenExpireMinutes);
         
-        return GenerateToken(
+        string token = GenerateToken(
             _configuration.RefreshTokenSecret,
             _configuration.Issuer,
             _configuration.Audience,
             expireTime);
+
+        return new TokenRefresh
+        {
+            TokenValue = token,
+            ExpireTime = expireTime
+        };
     }
 
     private string GenerateToken(
