@@ -1,5 +1,6 @@
 using AutoMapper;
 using GlossaryEng.Auth.Data.Entities;
+using GlossaryEng.Auth.Filters;
 using GlossaryEng.Auth.Models.Requests;
 using GlossaryEng.Auth.Services.Authenticator;
 using GlossaryEng.Auth.Services.TokenValidator;
@@ -27,14 +28,10 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
+    [ValidateModel]
     [Route("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         UserDb user = _mapper.Map<UserDb>(registerRequest);
 
         IdentityResult result = await _userManager.CreateAsync(user, registerRequest.Password);
@@ -47,14 +44,10 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
+    [ValidateModel]
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         UserDb user = await _userManager.FindByEmailAsync(loginRequest.Email);
 
         if (user is null)
@@ -73,14 +66,10 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
+    [ValidateModel]
     [Route("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshRequest refreshRequest)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         string requestToken = refreshRequest.Token;
         if (!_tokenValidator.ValidateRefreshToken(requestToken))
         {
