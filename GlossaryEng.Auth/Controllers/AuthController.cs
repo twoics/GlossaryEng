@@ -1,14 +1,11 @@
 using AutoMapper;
 using GlossaryEng.Auth.Data.Entities;
-using GlossaryEng.Auth.Models.AuthConfiguration;
 using GlossaryEng.Auth.Models.Requests;
 using GlossaryEng.Auth.Services.Authenticator;
-using GlossaryEng.Auth.Services.RefreshTokensRepository;
 using GlossaryEng.Auth.Services.TokenValidator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GlossaryEng.Auth.Controllers;
 
@@ -19,16 +16,14 @@ public class AuthController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenValidator _tokenValidator;
-    private readonly AuthenticationConfiguration _authenticationConfiguration;
     
     public AuthController(UserManager<UserDb> userManager, IMapper mapper, IAuthenticator authenticator,
-        ITokenValidator tokenValidator, AuthenticationConfiguration authenticationConfiguration)
+        ITokenValidator tokenValidator)
     {
         _userManager = userManager;
         _mapper = mapper;
         _authenticator = authenticator;
         _tokenValidator = tokenValidator;
-        _authenticationConfiguration = authenticationConfiguration;
     }
 
     [HttpPost]
@@ -86,15 +81,15 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        string token = refreshRequest.Token;
-        string secret = _authenticationConfiguration.RefreshTokenSecret;
-        
-        if (!_tokenValidator.Validate(token, secret))
+        string requestToken = refreshRequest.Token;
+        if (!_tokenValidator.ValidateRefreshToken(requestToken))
         {
             return BadRequest("Token is invalid");
         }
 
-        UserDb? user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken.Token == token);
+        UserDb? user = await _userManager.Users.FirstOrDefaultAsync(
+            u => u.RefreshToken.Token == requestToken);
+        
         if (user is null)
         {
             return NotFound("Token is nonexistent");

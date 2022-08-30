@@ -12,8 +12,12 @@ public class TokenValidator : ITokenValidator
     public TokenValidator(AuthenticationConfiguration authConfiguration) 
         => _authConfiguration = authConfiguration;
 
+    public bool ValidateRefreshToken(string token)
+    {
+        return Validate(token, _authConfiguration.RefreshTokenSecret);
+    }
 
-    public bool Validate(string token, string secretKey)
+    private bool Validate(string token, string secretKey)
     {
         TokenValidationParameters validationParameters = new TokenValidationParameters
         {
