@@ -1,9 +1,14 @@
 using AutoMapper;
 using GlossaryEng.Auth.Data.Entities;
+using GlossaryEng.Auth.Models.AuthConfiguration;
 using GlossaryEng.Auth.Models.Requests;
 using GlossaryEng.Auth.Services.Authenticator;
+using GlossaryEng.Auth.Services.RefreshTokensRepository;
+using GlossaryEng.Auth.Services.TokenValidator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GlossaryEng.Auth.Controllers;
 
@@ -13,12 +18,17 @@ public class AuthController : ControllerBase
     private readonly UserManager<UserDb> _userManager;
     private readonly IMapper _mapper;
     private readonly IAuthenticator _authenticator;
-
-    public AuthController(UserManager<UserDb> userManager, IMapper mapper, IAuthenticator authenticator)
+    private readonly ITokenValidator _tokenValidator;
+    private readonly AuthenticationConfiguration _authenticationConfiguration;
+    
+    public AuthController(UserManager<UserDb> userManager, IMapper mapper, IAuthenticator authenticator,
+        ITokenValidator tokenValidator, AuthenticationConfiguration authenticationConfiguration)
     {
         _userManager = userManager;
         _mapper = mapper;
         _authenticator = authenticator;
+        _tokenValidator = tokenValidator;
+        _authenticationConfiguration = authenticationConfiguration;
     }
 
     [HttpPost]
@@ -62,6 +72,32 @@ public class AuthController : ControllerBase
         if (!isValidPassword)
         {
             return Unauthorized("Wrong password");
+        }
+
+        return Ok(await _authenticator.AuthenticateUserAsync(user));
+    }
+
+    [HttpPost]
+    [Route("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshRequest refreshRequest)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        string token = refreshRequest.Token;
+        string secret = _authenticationConfiguration.RefreshTokenSecret;
+        
+        if (!_tokenValidator.Validate(token, secret))
+        {
+            return BadRequest("Token is invalid");
+        }
+
+        UserDb? user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken.Token == token);
+        if (user is null)
+        {
+            return NotFound("Token is nonexistent");
         }
         
         return Ok(await _authenticator.AuthenticateUserAsync(user));
