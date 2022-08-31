@@ -10,5 +10,5 @@ public class UsersDbContext : IdentityDbContext<UserDb>
     {
     }
 
-    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<RefreshTokenDb> RefreshTokens { get; set; }
 }

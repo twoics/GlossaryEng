@@ -22,9 +22,9 @@ public class Authenticator : IAuthenticator
         await _refreshTokenRepository.DeleteTokenIfExistAsync(user);
 
         TokenRefresh tokenRefresh = _tokenGenerator.GenerateRefreshToken(user);
-        RefreshToken refreshToken = new RefreshToken(tokenRefresh.TokenValue, user.Id);
+        RefreshTokenDb refreshTokenDb = new RefreshTokenDb(tokenRefresh.TokenValue, user.Id);
 
-        await _refreshTokenRepository.AddTokenAsync(refreshToken);
+        await _refreshTokenRepository.AddTokenAsync(refreshTokenDb);
 
         return new AuthenticatedUserResponse
         {

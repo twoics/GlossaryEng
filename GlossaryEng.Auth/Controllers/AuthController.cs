@@ -77,7 +77,7 @@ public class AuthController : ControllerBase
         }
 
         UserDb? user = await _userManager.Users.FirstOrDefaultAsync(
-            u => u.RefreshToken.Token == requestToken);
+            u => u.RefreshTokenDb.Token == requestToken);
         
         if (user is null)
         {

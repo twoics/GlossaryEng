@@ -14,15 +14,15 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         _usersDbContext = usersDbContext;
     }
 
-    public async Task AddTokenAsync(RefreshToken refreshToken)
+    public async Task AddTokenAsync(RefreshTokenDb refreshTokenDb)
     {
-        _usersDbContext.RefreshTokens.Add(refreshToken);
+        _usersDbContext.RefreshTokens.Add(refreshTokenDb);
         await _usersDbContext.SaveChangesAsync();
     }
 
     public async Task DeleteTokenIfExistAsync(UserDb user)
     {
-        RefreshToken? refreshToken =
+        RefreshTokenDb? refreshToken =
             await _usersDbContext.RefreshTokens.FirstOrDefaultAsync(t => t.UserDbId == user.Id);
 
         if (refreshToken is not null)

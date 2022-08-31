@@ -4,5 +4,5 @@ namespace GlossaryEng.Auth.Data.Entities;
 
 public class UserDb : IdentityUser
 {
-    public RefreshToken RefreshToken { get; set; }
+    public RefreshTokenDb RefreshTokenDb { get; set; }
 }

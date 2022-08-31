@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GlossaryEng.Auth.Migrations
 {
     [DbContext(typeof(UsersDbContext))]
-    [Migration("20220824160144_Initial")]
+    [Migration("20220831045019_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,31 +24,29 @@ namespace GlossaryEng.Auth.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.RefreshToken", b =>
+            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.RefreshTokenDb", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("UserDbId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
+                    b.HasIndex("UserDbId")
                         .IsUnique();
 
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.User", b =>
+            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.UserDb", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -244,11 +242,11 @@ namespace GlossaryEng.Auth.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.RefreshToken", b =>
+            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.RefreshTokenDb", b =>
                 {
-                    b.HasOne("GlossaryEng.Auth.Data.Entities.User", null)
-                        .WithOne("RefreshToken")
-                        .HasForeignKey("GlossaryEng.Auth.Data.Entities.RefreshToken", "UserId")
+                    b.HasOne("GlossaryEng.Auth.Data.Entities.UserDb", null)
+                        .WithOne("RefreshTokenDb")
+                        .HasForeignKey("GlossaryEng.Auth.Data.Entities.RefreshTokenDb", "UserDbId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -264,7 +262,7 @@ namespace GlossaryEng.Auth.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("GlossaryEng.Auth.Data.Entities.User", null)
+                    b.HasOne("GlossaryEng.Auth.Data.Entities.UserDb", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -273,7 +271,7 @@ namespace GlossaryEng.Auth.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("GlossaryEng.Auth.Data.Entities.User", null)
+                    b.HasOne("GlossaryEng.Auth.Data.Entities.UserDb", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -288,7 +286,7 @@ namespace GlossaryEng.Auth.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GlossaryEng.Auth.Data.Entities.User", null)
+                    b.HasOne("GlossaryEng.Auth.Data.Entities.UserDb", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -297,16 +295,16 @@ namespace GlossaryEng.Auth.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("GlossaryEng.Auth.Data.Entities.User", null)
+                    b.HasOne("GlossaryEng.Auth.Data.Entities.UserDb", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.User", b =>
+            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.UserDb", b =>
                 {
-                    b.Navigation("RefreshToken")
+                    b.Navigation("RefreshTokenDb")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

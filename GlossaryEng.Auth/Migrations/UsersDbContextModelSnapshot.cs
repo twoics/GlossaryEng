@@ -22,13 +22,11 @@ namespace GlossaryEng.Auth.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.RefreshToken", b =>
+            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.RefreshTokenDb", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -242,11 +240,11 @@ namespace GlossaryEng.Auth.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.RefreshToken", b =>
+            modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.RefreshTokenDb", b =>
                 {
                     b.HasOne("GlossaryEng.Auth.Data.Entities.UserDb", null)
-                        .WithOne("RefreshToken")
-                        .HasForeignKey("GlossaryEng.Auth.Data.Entities.RefreshToken", "UserDbId")
+                        .WithOne("RefreshTokenDb")
+                        .HasForeignKey("GlossaryEng.Auth.Data.Entities.RefreshTokenDb", "UserDbId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -304,7 +302,7 @@ namespace GlossaryEng.Auth.Migrations
 
             modelBuilder.Entity("GlossaryEng.Auth.Data.Entities.UserDb", b =>
                 {
-                    b.Navigation("RefreshToken")
+                    b.Navigation("RefreshTokenDb")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
