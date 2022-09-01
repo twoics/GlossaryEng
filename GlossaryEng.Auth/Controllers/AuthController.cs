@@ -76,14 +76,17 @@ public class AuthController : ControllerBase
             return BadRequest("Token is invalid");
         }
 
-        UserDb? user = await _userManager.Users.FirstOrDefaultAsync(
-            u => u.RefreshTokenDb.Token == requestToken);
+        return Ok();
         
-        if (user is null)
-        {
-            return NotFound("Token is nonexistent");
-        }
-        
-        return Ok(await _authenticator.AuthenticateUserAsync(user));
+        //
+        // UserDb? user = await _userManager.Users.FirstOrDefaultAsync(
+        //     u => u.RefreshTokenDb == requestToken);
+        //
+        // if (user is null)
+        // {
+        //     return NotFound("Token is nonexistent");
+        // }
+        //
+        // return Ok(await _authenticator.AuthenticateUserAsync(user));
     }
 }
