@@ -31,4 +31,21 @@ public class RefreshTokenRepository : IRefreshTokenRepository
             await _usersDbContext.SaveChangesAsync();
         }
     }
+
+    public async Task DeleteByTokenIdAsync(Guid id)
+    {
+        RefreshTokenDb? refreshTokenDb = await _usersDbContext.RefreshTokens.FindAsync(id);
+
+        if (refreshTokenDb is not null)
+        {
+            _usersDbContext.RefreshTokens.Remove(refreshTokenDb);
+            await _usersDbContext.SaveChangesAsync();
+        }
+    }
+
+    public async Task<RefreshTokenDb?> GetByTokenAsync(string token)
+    {
+        return await _usersDbContext.RefreshTokens.FirstOrDefaultAsync(
+            t => t.Token == token); 
+    }
 }

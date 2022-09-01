@@ -8,4 +8,8 @@ public interface IRefreshTokenRepository
     Task AddTokenAsync(RefreshTokenDb refreshTokenDb);
 
     Task DeleteTokenIfExistAsync(UserDb user);
+
+    Task DeleteByTokenIdAsync(Guid id);
+
+    Task<RefreshTokenDb?> GetByTokenAsync(string token);
 }
