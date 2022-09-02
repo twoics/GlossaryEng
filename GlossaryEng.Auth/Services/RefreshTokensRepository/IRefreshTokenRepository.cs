@@ -1,15 +1,16 @@
 using GlossaryEng.Auth.Data.Entities;
-using GlossaryEng.Auth.Models.Requests;
 
 namespace GlossaryEng.Auth.Services.RefreshTokensRepository;
 
 public interface IRefreshTokenRepository
 {
     Task AddTokenAsync(RefreshTokenDb refreshTokenDb);
-
-    Task DeleteTokenIfExistAsync(UserDb user);
-
+    
     Task DeleteByTokenIdAsync(Guid id);
 
-    Task<RefreshTokenDb?> GetByTokenAsync(string token);
+    Task<RefreshTokenDb?> GetByTokenAsync(string refreshToken);
+
+    Task DeleteAllUserTokensAsync(UserDb user);
+
+    Task<UserDb?> GetUserByTokenAsync(string refreshToken);
 }

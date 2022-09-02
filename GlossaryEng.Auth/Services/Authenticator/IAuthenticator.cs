@@ -9,4 +9,6 @@ public interface IAuthenticator
     Task<AuthenticatedUserResponse> AuthenticateUserAsync(UserDb user);
 
     Task<RefreshTokenDb?> DeleteTokenAsync(RefreshRequest tokenRefresh);
+
+    Task<UserDb?> LogoutAsync(LogoutRequest logoutRequest);
 }

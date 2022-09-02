@@ -45,4 +45,18 @@ public class Authenticator : IAuthenticator
 
         return refreshTokenDb;
     }
+
+    public async Task<UserDb?> LogoutAsync(LogoutRequest logoutRequest)
+    {
+        UserDb? user = await _refreshTokenRepository.GetUserByTokenAsync(logoutRequest.RefreshToken);
+
+        if (user is null)
+        {
+            return null;
+        }
+
+        await _refreshTokenRepository.DeleteAllUserTokensAsync(user);
+
+        return user;
+    }
 }

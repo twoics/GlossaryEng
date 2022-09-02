@@ -6,7 +6,6 @@ using GlossaryEng.Auth.Services.Authenticator;
 using GlossaryEng.Auth.Services.TokenValidator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace GlossaryEng.Auth.Controllers;
 
@@ -91,5 +90,19 @@ public class AuthController : ControllerBase
         }
 
         return Ok(await _authenticator.AuthenticateUserAsync(user));
+    }
+    
+    [HttpPost]
+    [ValidateModel]
+    [Route("logout")]
+    public async Task<IActionResult> Logout([FromBody] LogoutRequest logoutRequest)
+    {
+        UserDb? user = await _authenticator.LogoutAsync(logoutRequest);
+        if (user is null)
+        {
+            return NotFound("Can't logout user. User doesn't found");
+        }
+
+        return Ok("Logout successfully completed");
     }
 }
