@@ -6,7 +6,6 @@ using GlossaryEng.Auth.Services.Authenticator;
 using GlossaryEng.Auth.Services.TokenValidator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace GlossaryEng.Auth.Controllers;
 
@@ -17,7 +16,7 @@ public class AuthController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenValidator _tokenValidator;
-    
+
     public AuthController(UserManager<UserDb> userManager, IMapper mapper, IAuthenticator authenticator,
         ITokenValidator tokenValidator)
     {
@@ -76,14 +75,34 @@ public class AuthController : ControllerBase
             return BadRequest("Token is invalid");
         }
 
-        UserDb? user = await _userManager.Users.FirstOrDefaultAsync(
-            u => u.RefreshTokenDb.Token == requestToken);
-        
+        RefreshTokenDb? refreshTokenDb = await _authenticator.DeleteTokenAsync(refreshRequest);
+
+        if (refreshTokenDb is null)
+        {
+            return NotFound("Refresh token doesn't found");
+        }
+
+        UserDb? user = await _userManager.FindByIdAsync(refreshTokenDb.UserDbId);
+
         if (user is null)
         {
-            return NotFound("Token is nonexistent");
+            return NotFound("User doesn't found");
         }
-        
+
         return Ok(await _authenticator.AuthenticateUserAsync(user));
+    }
+    
+    [HttpPost]
+    [ValidateModel]
+    [Route("logout")]
+    public async Task<IActionResult> Logout([FromBody] LogoutRequest logoutRequest)
+    {
+        UserDb? user = await _authenticator.LogoutAsync(logoutRequest);
+        if (user is null)
+        {
+            return NotFound("Can't logout user. User doesn't found");
+        }
+
+        return Ok("Logout successfully completed");
     }
 }
