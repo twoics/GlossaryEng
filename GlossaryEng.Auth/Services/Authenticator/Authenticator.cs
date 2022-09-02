@@ -1,4 +1,5 @@
 using GlossaryEng.Auth.Data.Entities;
+using GlossaryEng.Auth.Models.Requests;
 using GlossaryEng.Auth.Models.Responses;
 using GlossaryEng.Auth.Models.Token;
 using GlossaryEng.Auth.Services.RefreshTokensRepository;
@@ -19,8 +20,6 @@ public class Authenticator : IAuthenticator
 
     public async Task<AuthenticatedUserResponse> AuthenticateUserAsync(UserDb user)
     {
-        await _refreshTokenRepository.DeleteTokenIfExistAsync(user);
-
         TokenRefresh tokenRefresh = _tokenGenerator.GenerateRefreshToken(user);
         RefreshTokenDb refreshTokenDb = new RefreshTokenDb(tokenRefresh.TokenValue, user.Id);
 
@@ -31,5 +30,19 @@ public class Authenticator : IAuthenticator
             TokenAccess = _tokenGenerator.GenerateAccessToken(user),
             TokenRefresh = tokenRefresh
         };
+    }
+
+    public async Task<RefreshTokenDb?> DeleteTokenAsync(RefreshRequest tokenRefresh)
+    {
+        RefreshTokenDb? refreshTokenDb = await _refreshTokenRepository.GetByTokenAsync(tokenRefresh.Token);
+
+        if (refreshTokenDb is null)
+        {
+            return null;
+        }
+
+        await _refreshTokenRepository.DeleteByTokenIdAsync(refreshTokenDb.Id);
+
+        return refreshTokenDb;
     }
 }

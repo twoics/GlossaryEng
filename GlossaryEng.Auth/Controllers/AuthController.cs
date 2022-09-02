@@ -17,7 +17,7 @@ public class AuthController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenValidator _tokenValidator;
-    
+
     public AuthController(UserManager<UserDb> userManager, IMapper mapper, IAuthenticator authenticator,
         ITokenValidator tokenValidator)
     {
@@ -76,17 +76,20 @@ public class AuthController : ControllerBase
             return BadRequest("Token is invalid");
         }
 
-        return Ok();
-        
-        //
-        // UserDb? user = await _userManager.Users.FirstOrDefaultAsync(
-        //     u => u.RefreshTokenDb == requestToken);
-        //
-        // if (user is null)
-        // {
-        //     return NotFound("Token is nonexistent");
-        // }
-        //
-        // return Ok(await _authenticator.AuthenticateUserAsync(user));
+        RefreshTokenDb? refreshTokenDb = await _authenticator.DeleteTokenAsync(refreshRequest);
+
+        if (refreshTokenDb is null)
+        {
+            return NotFound("Refresh token doesn't found");
+        }
+
+        UserDb? user = await _userManager.FindByIdAsync(refreshTokenDb.UserDbId);
+
+        if (user is null)
+        {
+            return NotFound("User doesn't found");
+        }
+
+        return Ok(await _authenticator.AuthenticateUserAsync(user));
     }
 }
