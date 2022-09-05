@@ -26,7 +26,13 @@ public class AccountController : ControllerBase
         {
             return NotFound("Invalid login or password");
         }
-
+        
+        var isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+        if (!isEmailConfirmed)
+        {
+            return Unauthorized("Email doesn't confirmed");
+        }
+        
         IdentityResult result =
             await _userManager.ChangePasswordAsync(user, changePasswordRequest.Password,
                 changePasswordRequest.NewPassword);
@@ -51,6 +57,12 @@ public class AccountController : ControllerBase
             return NotFound("Invalid login or password");
         }
 
+        var isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+        if (!isEmailConfirmed)
+        {
+            return Unauthorized("Email doesn't confirmed");
+        }
+        
         IdentityResult result = await _userManager.SetUserNameAsync(user, changeUsernameRequest.NewUserName);
         if (!result.Succeeded)
         {
@@ -62,6 +74,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet]
+    [ValidateModel]
     public async Task<IActionResult> ConfirmEmail(ConfirmEmail confirmEmail)
     { 
         UserDb? user = await _userManager.FindByIdAsync(confirmEmail.Id);

@@ -77,6 +77,12 @@ public class AuthController : ControllerBase
             return Unauthorized("User doesn't found");
         }
 
+        var isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+        if (!isEmailConfirmed)
+        {
+            return Unauthorized("Email doesn't confirmed");
+        }
+
         bool isValidPassword = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
         if (!isValidPassword)
         {
@@ -101,6 +107,12 @@ public class AuthController : ControllerBase
         if (user is null)
         {
             return NotFound("User doesn't found");
+        }
+
+        var isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+        if (!isEmailConfirmed)
+        {
+            return Unauthorized("Email doesn't confirmed");
         }
 
         CustomResult result = await _authenticator.DeleteTokenAsync(refreshRequest);
