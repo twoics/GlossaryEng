@@ -1,5 +1,6 @@
 using GlossaryEng.Auth.Data;
 using GlossaryEng.Auth.Data.Entities;
+using GlossaryEng.Auth.Models.CustomResult;
 using Microsoft.EntityFrameworkCore;
 
 namespace GlossaryEng.Auth.Services.RefreshTokensRepository;
@@ -19,15 +20,19 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         await _usersDbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteByTokenIdAsync(Guid id)
+    public async Task<CustomResult> DeleteByTokenIdAsync(Guid id)
     {
         RefreshTokenDb? refreshTokenDb = await _usersDbContext.RefreshTokens.FindAsync(id);
 
-        if (refreshTokenDb is not null)
+        if (refreshTokenDb is null)
         {
-            _usersDbContext.RefreshTokens.Remove(refreshTokenDb);
-            await _usersDbContext.SaveChangesAsync();
+            return new CustomResult(false, "Token isn't found");
         }
+
+        _usersDbContext.RefreshTokens.Remove(refreshTokenDb);
+        await _usersDbContext.SaveChangesAsync();
+        
+        return new CustomResult(true);
     }
 
     public async Task<RefreshTokenDb?> GetByTokenAsync(string refreshToken)
@@ -38,11 +43,11 @@ public class RefreshTokenRepository : IRefreshTokenRepository
 
     public async Task DeleteAllUserTokensAsync(UserDb user)
     {
-        IEnumerable<RefreshTokenDb> refreshTokensDbs = await _usersDbContext.RefreshTokens
+        IEnumerable<RefreshTokenDb> refreshTokensDb = await _usersDbContext.RefreshTokens
             .Where(t => t.UserDbId == user.Id)
             .ToListAsync();
 
-        _usersDbContext.RefreshTokens.RemoveRange(refreshTokensDbs);
+        _usersDbContext.RefreshTokens.RemoveRange(refreshTokensDb);
         await _usersDbContext.SaveChangesAsync();
     }
 

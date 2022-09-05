@@ -1,4 +1,5 @@
 using GlossaryEng.Auth.Data.Entities;
+using GlossaryEng.Auth.Models.CustomResult;
 
 namespace GlossaryEng.Auth.Services.RefreshTokensRepository;
 
@@ -6,7 +7,7 @@ public interface IRefreshTokenRepository
 {
     Task AddTokenAsync(RefreshTokenDb refreshTokenDb);
     
-    Task DeleteByTokenIdAsync(Guid id);
+    Task<CustomResult> DeleteByTokenIdAsync(Guid id);
 
     Task<RefreshTokenDb?> GetByTokenAsync(string refreshToken);
 

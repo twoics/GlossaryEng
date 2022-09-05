@@ -1,4 +1,5 @@
 using GlossaryEng.Auth.Data.Entities;
+using GlossaryEng.Auth.Models.CustomResult;
 using GlossaryEng.Auth.Models.Requests;
 using GlossaryEng.Auth.Models.Responses;
 using GlossaryEng.Auth.Models.Token;
@@ -32,31 +33,36 @@ public class Authenticator : IAuthenticator
         };
     }
 
-    public async Task<RefreshTokenDb?> DeleteTokenAsync(RefreshRequest tokenRefresh)
+    public async Task<CustomResult> DeleteTokenAsync(RefreshRequest tokenRefresh)
     {
         RefreshTokenDb? refreshTokenDb = await _refreshTokenRepository.GetByTokenAsync(tokenRefresh.Token);
 
         if (refreshTokenDb is null)
         {
-            return null;
+            return new CustomResult(false, "Refresh token doesn't found");
         }
 
         await _refreshTokenRepository.DeleteByTokenIdAsync(refreshTokenDb.Id);
 
-        return refreshTokenDb;
+        return new CustomResult(true);
     }
 
-    public async Task<UserDb?> LogoutAsync(LogoutRequest logoutRequest)
+    public async Task<CustomResult> LogoutAsync(LogoutRequest logoutRequest)
     {
         UserDb? user = await _refreshTokenRepository.GetUserByTokenAsync(logoutRequest.RefreshToken);
 
         if (user is null)
         {
-            return null;
+            return new CustomResult(false, "User doesn't found");
         }
 
         await _refreshTokenRepository.DeleteAllUserTokensAsync(user);
 
-        return user;
+        return new CustomResult(true);
+    }
+
+    public async Task<UserDb?> GetUserFromRefreshToken(RefreshRequest tokenRefresh)
+    {
+        return await _refreshTokenRepository.GetUserByTokenAsync(tokenRefresh.Token);
     }
 }

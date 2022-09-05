@@ -1,6 +1,7 @@
 using AutoMapper;
 using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Filters;
+using GlossaryEng.Auth.Models.CustomResult;
 using GlossaryEng.Auth.Models.Requests;
 using GlossaryEng.Auth.Services.Authenticator;
 using GlossaryEng.Auth.Services.EmailSender;
@@ -43,18 +44,17 @@ public class AuthController : ControllerBase
         }
 
         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
         if (code is null)
         {
             return BadRequest("Can't create user code");
         }
-        
+
         var confirmUrl = Url.Action(
             "ConfirmEmail",
             "Account",
             new ConfirmEmail(user.Id, code),
             protocol: HttpContext.Request.Scheme);
-        
+
         var customResult = await _emailSender.SendEmailAsync("glossaryeng@gmail.com", "Test",
             $"Test message <a href={confirmUrl}>Click</a>");
 
@@ -62,7 +62,7 @@ public class AuthController : ControllerBase
         {
             return BadRequest(customResult.Error);
         }
-        
+
         return Ok("User is successfully created");
     }
 
@@ -72,14 +72,12 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
         UserDb user = await _userManager.FindByEmailAsync(loginRequest.Email);
-
         if (user is null)
         {
             return Unauthorized("User doesn't found");
         }
 
         bool isValidPassword = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
-
         if (!isValidPassword)
         {
             return Unauthorized("Wrong password");
@@ -99,18 +97,16 @@ public class AuthController : ControllerBase
             return BadRequest("Token is invalid");
         }
 
-        RefreshTokenDb? refreshTokenDb = await _authenticator.DeleteTokenAsync(refreshRequest);
-
-        if (refreshTokenDb is null)
-        {
-            return NotFound("Refresh token doesn't found");
-        }
-
-        UserDb? user = await _userManager.FindByIdAsync(refreshTokenDb.UserDbId);
-
+        UserDb? user = await _authenticator.GetUserFromRefreshToken(refreshRequest);
         if (user is null)
         {
             return NotFound("User doesn't found");
+        }
+
+        CustomResult result = await _authenticator.DeleteTokenAsync(refreshRequest);
+        if (!result.IsSuccess)
+        {
+            return NotFound(result.Error);
         }
 
         return Ok(await _authenticator.AuthenticateUserAsync(user));
@@ -121,10 +117,10 @@ public class AuthController : ControllerBase
     [Route("logout")]
     public async Task<IActionResult> Logout([FromBody] LogoutRequest logoutRequest)
     {
-        UserDb? user = await _authenticator.LogoutAsync(logoutRequest);
-        if (user is null)
+        CustomResult result = await _authenticator.LogoutAsync(logoutRequest);
+        if (!result.IsSuccess)
         {
-            return NotFound("Can't logout user. User doesn't found");
+            return NotFound(result.Error);
         }
 
         return Ok("Logout successfully completed");
