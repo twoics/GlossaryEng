@@ -19,7 +19,7 @@ public class AccountController : ControllerBase
     [HttpPost]
     [ValidateModel]
     [Route("change-password")]
-    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
+    public async Task<ObjectResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
     {
         UserDb? user = await ValidateUser(changePasswordRequest.Email, changePasswordRequest.Password);
         if (user is null)
@@ -49,7 +49,7 @@ public class AccountController : ControllerBase
     [HttpPost]
     [ValidateModel]
     [Route("change-username")]
-    public async Task<IActionResult> ChangeUserName([FromBody] ChangeUsernameRequest changeUsernameRequest)
+    public async Task<ObjectResult> ChangeUserName([FromBody] ChangeUsernameRequest changeUsernameRequest)
     {
         UserDb? user = await ValidateUser(changeUsernameRequest.Email, changeUsernameRequest.Password);
         if (user is null)
@@ -75,7 +75,7 @@ public class AccountController : ControllerBase
 
     [HttpGet]
     [ValidateModel]
-    public async Task<IActionResult> ConfirmEmail(ConfirmEmail confirmEmail)
+    public async Task<ObjectResult> ConfirmEmail(ConfirmEmail confirmEmail)
     { 
         UserDb? user = await _userManager.FindByIdAsync(confirmEmail.Id);
         if (user is null)

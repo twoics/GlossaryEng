@@ -33,7 +33,7 @@ public class AuthController : ControllerBase
     [HttpPost]
     [ValidateModel]
     [Route("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
+    public async Task<ObjectResult> Register([FromBody] RegisterRequest registerRequest)
     {
         UserDb user = _mapper.Map<UserDb>(registerRequest);
 
@@ -43,11 +43,7 @@ public class AuthController : ControllerBase
             return BadRequest(result.Errors);
         }
 
-        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        if (code is null)
-        {
-            return BadRequest("Can't create user code");
-        }
+        string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
         var confirmUrl = Url.Action(
             "ConfirmEmail",
@@ -69,12 +65,12 @@ public class AuthController : ControllerBase
     [HttpPost]
     [ValidateModel]
     [Route("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+    public async Task<ObjectResult> Login([FromBody] LoginRequest loginRequest)
     {
         UserDb user = await _userManager.FindByEmailAsync(loginRequest.Email);
         if (user is null)
         {
-            return Unauthorized("User doesn't found");
+            return NotFound("User doesn't found");
         }
 
         var isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
@@ -95,7 +91,7 @@ public class AuthController : ControllerBase
     [HttpPost]
     [ValidateModel]
     [Route("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshRequest refreshRequest)
+    public async Task<ObjectResult> Refresh([FromBody] RefreshRequest refreshRequest)
     {
         string requestToken = refreshRequest.Token;
         if (!_tokenValidator.ValidateRefreshToken(requestToken))
@@ -127,7 +123,7 @@ public class AuthController : ControllerBase
     [HttpPost]
     [ValidateModel]
     [Route("logout")]
-    public async Task<IActionResult> Logout([FromBody] LogoutRequest logoutRequest)
+    public async Task<ObjectResult> Logout([FromBody] LogoutRequest logoutRequest)
     {
         CustomResult result = await _authenticator.LogoutAsync(logoutRequest);
         if (!result.IsSuccess)
