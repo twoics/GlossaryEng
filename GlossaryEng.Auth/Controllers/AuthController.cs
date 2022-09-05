@@ -42,8 +42,21 @@ public class AuthController : ControllerBase
             return BadRequest(result.Errors);
         }
 
+        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+        if (code is null)
+        {
+            return BadRequest("Can't create user code");
+        }
+        
+        var confirmUrl = Url.Action(
+            "ConfirmEmail",
+            "Account",
+            new ConfirmEmail(user.Id, code),
+            protocol: HttpContext.Request.Scheme);
+        
         var customResult = await _emailSender.SendEmailAsync("glossaryeng@gmail.com", "Test",
-            "Test message <a href=\"https://www.youtube.com/\">Тык</a>");
+            $"Test message <a href={confirmUrl}>Click</a>");
 
         if (!customResult.IsSuccess)
         {

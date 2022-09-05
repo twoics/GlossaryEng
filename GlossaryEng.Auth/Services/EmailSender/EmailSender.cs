@@ -22,7 +22,7 @@ public class EmailSender : IEmailSender
         mimeMessage.From.Add(new MailboxAddress(_emailConfiguration.NameSender, _emailConfiguration.EmailSender));
         mimeMessage.To.Add(new MailboxAddress(string.Empty, recipientEmail));
         mimeMessage.Subject = subject;
-        mimeMessage.Body = new TextPart(TextFormat.Plain) { Text = message };
+        mimeMessage.Body = new TextPart(TextFormat.Html) { Text = message };
 
         using var client = new SmtpClient();
         try

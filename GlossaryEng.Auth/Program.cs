@@ -33,12 +33,12 @@ builder.Services.AddDbContext<UsersDbContext>(
     options => options.UseNpgsql(databaseConnection));
 
 
-// Add only user management system
-builder.Services.AddIdentityCore<UserDb>(options =>
+// Will use only user management system
+builder.Services.AddIdentity<UserDb, IdentityRole>(options =>
         options.User.RequireUniqueEmail = true
     )
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<UsersDbContext>();
+    .AddEntityFrameworkStores<UsersDbContext>()
+    .AddDefaultTokenProviders();
 
 
 // Add auth configuration

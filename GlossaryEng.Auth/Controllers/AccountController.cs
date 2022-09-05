@@ -60,6 +60,25 @@ public class AccountController : ControllerBase
         return Ok("Username has been changed");
 
     }
+
+    [HttpGet]
+    public async Task<IActionResult> ConfirmEmail(ConfirmEmail confirmEmail)
+    { 
+        UserDb? user = await _userManager.FindByIdAsync(confirmEmail.Id);
+        if (user is null)
+        {
+            return NotFound("User doesn't found");
+        }
+
+        var result = await _userManager.ConfirmEmailAsync(user, confirmEmail.Code);
+
+        if (result.Succeeded)
+        {
+            return Ok("Done");
+        }
+
+        return BadRequest("Can't confirm email");
+    }
     
     private async Task<UserDb?> ValidateUser(string email, string password)
     {
