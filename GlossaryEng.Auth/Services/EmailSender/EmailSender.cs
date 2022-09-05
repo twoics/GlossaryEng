@@ -1,3 +1,4 @@
+using GlossaryEng.Auth.Models.CustomResult;
 using GlossaryEng.Auth.Models.EmailConfiguration;
 using MailKit.Net.Smtp;
 using MimeKit;
@@ -14,7 +15,7 @@ public class EmailSender : IEmailSender
         _emailConfiguration = emailConfiguration;
     }
 
-    public async Task SendEmailAsync(string recipientEmail, string subject, string message)
+    public async Task<CustomResult> SendEmailAsync(string recipientEmail, string subject, string message)
     {
         var mimeMessage = new MimeMessage();
 
@@ -24,13 +25,21 @@ public class EmailSender : IEmailSender
         mimeMessage.Body = new TextPart(TextFormat.Plain) { Text = message };
 
         using var client = new SmtpClient();
-        
-        await client.ConnectAsync(_emailConfiguration.SmtpServer, _emailConfiguration.Port,
-            _emailConfiguration.UseSsl);
-        
-        await client.AuthenticateAsync(_emailConfiguration.EmailSender, _emailConfiguration.Password);
-        
-        await client.SendAsync(mimeMessage);
-        await client.DisconnectAsync(true);
+        try
+        {
+            await client.ConnectAsync(_emailConfiguration.SmtpServer, _emailConfiguration.Port,
+                _emailConfiguration.UseSsl);
+
+            await client.AuthenticateAsync(_emailConfiguration.EmailSender, _emailConfiguration.Password);
+
+            await client.SendAsync(mimeMessage);
+            await client.DisconnectAsync(true);
+        }
+        catch
+        {
+            return new CustomResult(false, "Can't send message");
+        }
+
+        return new CustomResult(true);
     }
 }
