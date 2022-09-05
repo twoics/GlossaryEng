@@ -48,7 +48,11 @@ public class AuthController : ControllerBase
         var confirmUrl = Url.Action(
             "ConfirmEmail",
             "Account",
-            new ConfirmEmail(user.Id, code),
+            new EmailConfirmRequest
+            {
+                Id = user.Id,
+                Code = code
+            },
             protocol: HttpContext.Request.Scheme);
 
         var customResult = await _emailSender.SendEmailAsync("glossaryeng@gmail.com", "Test",
@@ -103,12 +107,6 @@ public class AuthController : ControllerBase
         if (user is null)
         {
             return NotFound("User doesn't found");
-        }
-
-        var isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
-        if (!isEmailConfirmed)
-        {
-            return Unauthorized("Email doesn't confirmed");
         }
 
         CustomResult result = await _authenticator.DeleteTokenAsync(refreshRequest);

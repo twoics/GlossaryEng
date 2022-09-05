@@ -75,16 +75,15 @@ public class AccountController : ControllerBase
 
     [HttpGet]
     [ValidateModel]
-    public async Task<ObjectResult> ConfirmEmail(ConfirmEmail confirmEmail)
+    public async Task<ObjectResult> ConfirmEmail(EmailConfirmRequest emailConfirmRequest)
     { 
-        UserDb? user = await _userManager.FindByIdAsync(confirmEmail.Id);
+        UserDb? user = await _userManager.FindByIdAsync(emailConfirmRequest.Id);
         if (user is null)
         {
             return NotFound("User doesn't found");
         }
 
-        var result = await _userManager.ConfirmEmailAsync(user, confirmEmail.Code);
-
+        var result = await _userManager.ConfirmEmailAsync(user, emailConfirmRequest.Code);
         if (result.Succeeded)
         {
             return Ok("Done");
