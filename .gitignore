@@ -457,3 +457,6 @@ $RECYCLE.BIN/
 ## Api 
 GlossaryEngApi/appsettings.Development.json
 GlossaryEng.Auth/appsettings.Development.json
+
+## Google client secret
+GlossaryEng.Auth/email_secret.json

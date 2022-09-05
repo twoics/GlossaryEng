@@ -3,6 +3,7 @@ using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Filters;
 using GlossaryEng.Auth.Models.Requests;
 using GlossaryEng.Auth.Services.Authenticator;
+using GlossaryEng.Auth.Services.EmailSender;
 using GlossaryEng.Auth.Services.TokenValidator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +17,16 @@ public class AuthController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenValidator _tokenValidator;
+    private readonly IEmailSender _emailSender;
 
     public AuthController(UserManager<UserDb> userManager, IMapper mapper, IAuthenticator authenticator,
-        ITokenValidator tokenValidator)
+        ITokenValidator tokenValidator, IEmailSender emailSender)
     {
         _userManager = userManager;
         _mapper = mapper;
         _authenticator = authenticator;
         _tokenValidator = tokenValidator;
+        _emailSender = emailSender;
     }
 
     [HttpPost]
@@ -39,6 +42,27 @@ public class AuthController : ControllerBase
             return BadRequest(result.Errors);
         }
 
+        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+        if (code is null)
+        {
+            return BadRequest("Can't create user code");
+        }
+        
+        var confirmUrl = Url.Action(
+            "ConfirmEmail",
+            "Account",
+            new ConfirmEmail(user.Id, code),
+            protocol: HttpContext.Request.Scheme);
+        
+        var customResult = await _emailSender.SendEmailAsync("glossaryeng@gmail.com", "Test",
+            $"Test message <a href={confirmUrl}>Click</a>");
+
+        if (!customResult.IsSuccess)
+        {
+            return BadRequest(customResult.Error);
+        }
+        
         return Ok("User is successfully created");
     }
 
@@ -91,7 +115,7 @@ public class AuthController : ControllerBase
 
         return Ok(await _authenticator.AuthenticateUserAsync(user));
     }
-    
+
     [HttpPost]
     [ValidateModel]
     [Route("logout")]

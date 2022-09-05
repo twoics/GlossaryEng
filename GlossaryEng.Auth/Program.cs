@@ -2,7 +2,9 @@ using GlossaryEng.Auth.Data;
 using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Exceptions;
 using GlossaryEng.Auth.Models.AuthConfiguration;
+using GlossaryEng.Auth.Models.EmailConfiguration;
 using GlossaryEng.Auth.Services.Authenticator;
+using GlossaryEng.Auth.Services.EmailSender;
 using GlossaryEng.Auth.Services.Mapper;
 using GlossaryEng.Auth.Services.RefreshTokensRepository;
 using GlossaryEng.Auth.Services.TokenGenerator;
@@ -31,16 +33,16 @@ builder.Services.AddDbContext<UsersDbContext>(
     options => options.UseNpgsql(databaseConnection));
 
 
-// Add only user management system
-builder.Services.AddIdentityCore<UserDb>(options =>
+// Will use only user management system
+builder.Services.AddIdentity<UserDb, IdentityRole>(options =>
         options.User.RequireUniqueEmail = true
     )
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<UsersDbContext>();
+    .AddEntityFrameworkStores<UsersDbContext>()
+    .AddDefaultTokenProviders();
 
 
 // Add auth configuration
-AuthenticationConfiguration authenticationConfiguration
+AuthenticationConfiguration? authenticationConfiguration
     = builder.Configuration.GetSection("Authentication").Get<AuthenticationConfiguration>();
 
 if (authenticationConfiguration is null)
@@ -49,12 +51,24 @@ if (authenticationConfiguration is null)
         "Unable to create an AuthenticationConfiguration instance from the configuration. Check fields and try again");
 }
 
+EmailConfiguration? emailConfiguration
+    = builder.Configuration.GetSection("EmailConfiguration")
+        .Get<EmailConfiguration>();
+
+if (emailConfiguration is null)
+{
+    throw new ConfigureStringException(
+        "Unable to create an EmailConfiguration instance from the configuration. Check fields and try again");
+}
 
 // Dependency injection
+builder.Services.AddSingleton(emailConfiguration);
 builder.Services.AddSingleton(authenticationConfiguration);
+
 builder.Services.AddSingleton<ITokenGenerator, TokenGenerator>();
 builder.Services.AddSingleton<ITokenValidator, TokenValidator>();
 
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IAuthenticator, Authenticator>();
 builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
 
