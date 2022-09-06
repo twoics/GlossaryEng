@@ -1,6 +1,5 @@
 using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Models.CustomResult;
-using GlossaryEng.Auth.Models.Requests;
 using GlossaryEng.Auth.Models.Responses;
 
 namespace GlossaryEng.Auth.Services.Authenticator;
@@ -11,7 +10,7 @@ public interface IAuthenticator
 
     Task<CustomResult> DeleteTokenAsync(string tokenRefresh);
 
-    Task<CustomResult> LogoutAsync(LogoutRequest logoutRequest);
+    Task<CustomResult> LogoutAsync(string refreshToken);
     
-    Task<UserDb?> GetUserFromRefreshToken(string tokenRefresh);
+    Task<UserDb?> GetUserFromRefreshTokenAsync(string tokenRefresh);
 }

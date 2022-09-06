@@ -1,6 +1,8 @@
 using GlossaryEng.Auth.Data.Entities;
 using GlossaryEng.Auth.Filters;
 using GlossaryEng.Auth.Models.Requests;
+using GlossaryEng.Auth.Services.Authenticator;
+using GlossaryEng.Auth.Services.TokenValidator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +12,15 @@ namespace GlossaryEng.Auth.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly UserManager<UserDb> _userManager;
+    private readonly ITokenValidator _tokenValidator;
+    private readonly IAuthenticator _authenticator;
 
-    public AccountController(UserManager<UserDb> userManager)
+    public AccountController(UserManager<UserDb> userManager, ITokenValidator tokenValidator,
+        IAuthenticator authenticator)
     {
         _userManager = userManager;
+        _tokenValidator = tokenValidator;
+        _authenticator = authenticator;
     }
 
     [HttpPost]
@@ -21,56 +28,58 @@ public class AccountController : ControllerBase
     [Route("change-password")]
     public async Task<ObjectResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
     {
-        UserDb? user = await ValidateUser(changePasswordRequest.Email, changePasswordRequest.Password);
+        UserDb? user = await _userManager.FindByEmailAsync(changePasswordRequest.Email);
         if (user is null)
         {
-            return NotFound("Invalid login or password");
+            return NotFound("Invalid token. No user has this token");
         }
-        
-        var isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
-        if (!isEmailConfirmed)
+
+        bool isValidate = _tokenValidator.ValidateRefreshToken(changePasswordRequest.RefreshToken);
+        if (!isValidate)
         {
-            return Unauthorized("Email doesn't confirmed");
+            return BadRequest("Token is invalid");
         }
-        
+
         IdentityResult result =
             await _userManager.ChangePasswordAsync(user, changePasswordRequest.Password,
                 changePasswordRequest.NewPassword);
 
         if (!result.Succeeded)
         {
-            return BadRequest("Can't change user password");
+            return BadRequest("Operation failed. Can't change user password");
         }
 
-        return Ok("Password has been changed");
+        await _authenticator.LogoutAsync(changePasswordRequest.RefreshToken);
+        
+        return Ok(await _authenticator.AuthenticateUserAsync(user));
     }
-    
-    
+
     [HttpPost]
     [ValidateModel]
     [Route("change-username")]
     public async Task<ObjectResult> ChangeUserName([FromBody] ChangeUsernameRequest changeUsernameRequest)
     {
-        UserDb? user = await ValidateUser(changeUsernameRequest.Email, changeUsernameRequest.Password);
+        UserDb? user = await _userManager.FindByEmailAsync(changeUsernameRequest.Email);
         if (user is null)
         {
-            return NotFound("Invalid login or password");
+            return NotFound("User doesn't found");
         }
 
-        var isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
-        if (!isEmailConfirmed)
+        bool isValid = _tokenValidator.ValidateRefreshToken(changeUsernameRequest.RefreshToken);
+        if (!isValid)
         {
-            return Unauthorized("Email doesn't confirmed");
+            return BadRequest("Token is invalid");
         }
-        
+
         IdentityResult result = await _userManager.SetUserNameAsync(user, changeUsernameRequest.NewUserName);
         if (!result.Succeeded)
         {
             return BadRequest("Can't change user name. Duplicate name");
         }
 
-        return Ok("Username has been changed");
-
+        await _authenticator.LogoutAsync(changeUsernameRequest.RefreshToken);
+        
+        return Ok(await _authenticator.AuthenticateUserAsync(user));
     }
 
     [HttpGet]
@@ -90,19 +99,5 @@ public class AccountController : ControllerBase
         }
 
         return BadRequest("Can't confirm email");
-    }
-    
-    private async Task<UserDb?> ValidateUser(string email, string password)
-    {
-        UserDb? user = await _userManager.FindByEmailAsync(email);
-        if (user is null)
-        {
-            return null;
-        }
-
-        bool isValidPassword = await _userManager.CheckPasswordAsync(user, password);
-        
-        // if password invalid return null, else user
-        return !isValidPassword ? null : user;
     }
 }

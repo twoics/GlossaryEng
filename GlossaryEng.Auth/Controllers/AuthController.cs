@@ -103,7 +103,7 @@ public class AuthController : ControllerBase
             return BadRequest("Token is invalid");
         }
 
-        UserDb? user = await _authenticator.GetUserFromRefreshToken(refreshRequest.Token);
+        UserDb? user = await _authenticator.GetUserFromRefreshTokenAsync(refreshRequest.Token);
         if (user is null)
         {
             return NotFound("User doesn't found");
@@ -123,7 +123,7 @@ public class AuthController : ControllerBase
     [Route("logout")]
     public async Task<ObjectResult> Logout([FromBody] LogoutRequest logoutRequest)
     {
-        CustomResult result = await _authenticator.LogoutAsync(logoutRequest);
+        CustomResult result = await _authenticator.LogoutAsync(logoutRequest.RefreshToken);
         if (!result.IsSuccess)
         {
             return NotFound(result.Error);

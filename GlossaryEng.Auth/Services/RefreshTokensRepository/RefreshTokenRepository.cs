@@ -7,7 +7,7 @@ namespace GlossaryEng.Auth.Services.RefreshTokensRepository;
 
 public class RefreshTokenRepository : IRefreshTokenRepository
 {
-    private UsersDbContext _usersDbContext;
+    private readonly UsersDbContext _usersDbContext;
 
     public RefreshTokenRepository(UsersDbContext usersDbContext)
     {

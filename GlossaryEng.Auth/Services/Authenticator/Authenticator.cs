@@ -47,10 +47,9 @@ public class Authenticator : IAuthenticator
         return new CustomResult(true);
     }
 
-    public async Task<CustomResult> LogoutAsync(LogoutRequest logoutRequest)
+    public async Task<CustomResult> LogoutAsync(string refreshToken)
     {
-        UserDb? user = await _refreshTokenRepository.GetUserByTokenAsync(logoutRequest.RefreshToken);
-
+        UserDb? user = await _refreshTokenRepository.GetUserByTokenAsync(refreshToken);
         if (user is null)
         {
             return new CustomResult(false, "User doesn't found");
@@ -61,7 +60,7 @@ public class Authenticator : IAuthenticator
         return new CustomResult(true);
     }
 
-    public async Task<UserDb?> GetUserFromRefreshToken(string tokenRefresh)
+    public async Task<UserDb?> GetUserFromRefreshTokenAsync(string tokenRefresh)
     {
         return await _refreshTokenRepository.GetUserByTokenAsync(tokenRefresh);
     }
