@@ -103,13 +103,13 @@ public class AuthController : ControllerBase
             return BadRequest("Token is invalid");
         }
 
-        UserDb? user = await _authenticator.GetUserFromRefreshToken(refreshRequest);
+        UserDb? user = await _authenticator.GetUserFromRefreshToken(refreshRequest.Token);
         if (user is null)
         {
             return NotFound("User doesn't found");
         }
 
-        CustomResult result = await _authenticator.DeleteTokenAsync(refreshRequest);
+        CustomResult result = await _authenticator.DeleteTokenAsync(refreshRequest.Token);
         if (!result.IsSuccess)
         {
             return NotFound(result.Error);
