@@ -8,7 +8,16 @@ With this api you can access the authorization server
 http://localhost:5213
 ```
 
-## Register
+# Contents
+
+- #### [Register](#Register);
+- #### [Login](#Login);
+- #### [Refresh](#Refresh);
+- #### [Logout](#Logout);
+- #### [Change user name](#ChangeName);
+- #### [Change password](#ChangePassword);
+
+## <a name="Register"></a> Register
 
 ### Request
 
@@ -38,7 +47,7 @@ POST api/auth/register
 | 400  | `BAD REQUEST` | Unable to create a user or send a message |
 | 200  |     `OK`      |             User created and message sent |
 
-## LogIn
+## <a name="Login"></a> LogIn
 
 ### Request
 
@@ -86,7 +95,7 @@ POST api/auth/login
 | 401  | `Unathorized` | Email is not verified or the password is incorrect |
 | 200  |     `OK`      |                         The request was successful |
 
-## Refresh
+## <a name="Refresh"></a> Refresh
 
 ### Request
 
@@ -121,7 +130,7 @@ Used to get a new pair of access and refresh tokens
 | 404  |  `Not Found`  | Unable to retrieve a user from a token or remove a token from a database |
 | 200  |     `OK`      |                                               The request was successful |
 
-## LogOut
+## <a name="Logout"></a> LogOut
 
 ### Request
 
@@ -148,7 +157,7 @@ POST api/auth/logout
 | 400  | `BAD REQUEST` |          Can't logout user |
 | 200  |     `OK`      | The request was successful |
 
-## Change Password
+## <a name="ChangePassword"></a> Change Password
 
 ### Request
 
@@ -190,7 +199,7 @@ POST api/account/change-password
 | 404  |  `Not Found`  |         No user with this token was found |
 | 200  |     `OK`      |                The request was successful |
 
-## Change User name
+## <a name="ChangeName"></a> Change User name
 
 ### Request
 
