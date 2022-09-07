@@ -33,9 +33,9 @@ public class Authenticator : IAuthenticator
         };
     }
 
-    public async Task<CustomResult> DeleteTokenAsync(string tokenRefresh)
+    public async Task<CustomResult> DeleteTokenAsync(string refreshToken)
     {
-        RefreshTokenDb? refreshTokenDb = await _refreshTokenRepository.GetByTokenAsync(tokenRefresh);
+        RefreshTokenDb? refreshTokenDb = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
 
         if (refreshTokenDb is null)
         {
@@ -60,8 +60,8 @@ public class Authenticator : IAuthenticator
         return new CustomResult(true);
     }
 
-    public async Task<UserDb?> GetUserFromRefreshTokenAsync(string tokenRefresh)
+    public async Task<UserDb?> GetUserFromRefreshTokenAsync(string refreshToken)
     {
-        return await _refreshTokenRepository.GetUserByTokenAsync(tokenRefresh);
+        return await _refreshTokenRepository.GetUserByTokenAsync(refreshToken);
     }
 }
