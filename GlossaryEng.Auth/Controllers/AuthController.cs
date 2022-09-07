@@ -55,15 +55,15 @@ public class AuthController : ControllerBase
             },
             protocol: HttpContext.Request.Scheme);
 
-        var customResult = await _emailSender.SendEmailAsync("glossaryeng@gmail.com", "Test",
-            $"Test message <a href={confirmUrl}>Click</a>");
+        var customResult = await _emailSender.SendEmailAsync(user.Email, "Confirm Email",
+            $"Thank you for choosing GlossaryEng. To complete registration <a href={confirmUrl}>Click Here</a>");
 
         if (!customResult.IsSuccess)
         {
             return BadRequest(customResult.Error);
         }
 
-        return Ok("User is successfully created");
+        return Ok("User is successfully created. Email confirmation message sent to your email address");
     }
 
     [HttpPost]
