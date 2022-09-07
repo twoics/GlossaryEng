@@ -28,18 +28,18 @@ public class AccountController : ControllerBase
     [Route("change-password")]
     public async Task<ObjectResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
     {
-        UserDb? user = await _userManager.FindByEmailAsync(changePasswordRequest.Email);
-        if (user is null)
-        {
-            return NotFound("Invalid token. No user has this token");
-        }
-
         bool isValidate = _tokenValidator.ValidateRefreshToken(changePasswordRequest.RefreshToken);
         if (!isValidate)
         {
             return BadRequest("Token is invalid");
         }
 
+        UserDb? user = await _authenticator.GetUserFromRefreshTokenAsync(changePasswordRequest.RefreshToken);
+        if (user is null)
+        {
+            return NotFound("User doesn't found");
+        }
+        
         IdentityResult result =
             await _userManager.ChangePasswordAsync(user, changePasswordRequest.Password,
                 changePasswordRequest.NewPassword);
@@ -50,7 +50,7 @@ public class AccountController : ControllerBase
         }
 
         await _authenticator.LogoutAsync(changePasswordRequest.RefreshToken);
-        
+
         return Ok(await _authenticator.AuthenticateUserAsync(user));
     }
 
@@ -59,16 +59,16 @@ public class AccountController : ControllerBase
     [Route("change-username")]
     public async Task<ObjectResult> ChangeUserName([FromBody] ChangeUsernameRequest changeUsernameRequest)
     {
-        UserDb? user = await _userManager.FindByEmailAsync(changeUsernameRequest.Email);
-        if (user is null)
-        {
-            return NotFound("User doesn't found");
-        }
-
         bool isValid = _tokenValidator.ValidateRefreshToken(changeUsernameRequest.RefreshToken);
         if (!isValid)
         {
             return BadRequest("Token is invalid");
+        }
+
+        UserDb? user = await _authenticator.GetUserFromRefreshTokenAsync(changeUsernameRequest.RefreshToken);
+        if (user is null)
+        {
+            return NotFound("User doesn't found");
         }
 
         IdentityResult result = await _userManager.SetUserNameAsync(user, changeUsernameRequest.NewUserName);
@@ -78,14 +78,14 @@ public class AccountController : ControllerBase
         }
 
         await _authenticator.LogoutAsync(changeUsernameRequest.RefreshToken);
-        
+
         return Ok(await _authenticator.AuthenticateUserAsync(user));
     }
 
     [HttpGet]
     [ValidateModel]
     public async Task<ObjectResult> ConfirmEmail(EmailConfirmRequest emailConfirmRequest)
-    { 
+    {
         UserDb? user = await _userManager.FindByIdAsync(emailConfirmRequest.Id);
         if (user is null)
         {

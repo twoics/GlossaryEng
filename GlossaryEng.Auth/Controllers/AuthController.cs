@@ -97,19 +97,19 @@ public class AuthController : ControllerBase
     [Route("refresh")]
     public async Task<ObjectResult> Refresh([FromBody] RefreshRequest refreshRequest)
     {
-        string requestToken = refreshRequest.Token;
+        string requestToken = refreshRequest.RefreshToken;
         if (!_tokenValidator.ValidateRefreshToken(requestToken))
         {
             return BadRequest("Token is invalid");
         }
 
-        UserDb? user = await _authenticator.GetUserFromRefreshTokenAsync(refreshRequest.Token);
+        UserDb? user = await _authenticator.GetUserFromRefreshTokenAsync(refreshRequest.RefreshToken);
         if (user is null)
         {
             return NotFound("User doesn't found");
         }
 
-        CustomResult result = await _authenticator.DeleteTokenAsync(refreshRequest.Token);
+        CustomResult result = await _authenticator.DeleteTokenAsync(refreshRequest.RefreshToken);
         if (!result.IsSuccess)
         {
             return NotFound(result.Error);
