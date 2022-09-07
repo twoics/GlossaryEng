@@ -21,7 +21,7 @@ public class Authenticator : IAuthenticator
 
     public async Task<AuthenticatedUserResponse> AuthenticateUserAsync(UserDb user)
     {
-        TokenRefresh tokenRefresh = _tokenGenerator.GenerateRefreshToken(user);
+        TokenRefresh tokenRefresh = _tokenGenerator.GenerateRefreshToken();
         RefreshTokenDb refreshTokenDb = new RefreshTokenDb(tokenRefresh.TokenValue, user.Id);
 
         await _refreshTokenRepository.AddTokenAsync(refreshTokenDb);

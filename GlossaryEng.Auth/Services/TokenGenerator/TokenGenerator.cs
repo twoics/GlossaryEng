@@ -41,7 +41,7 @@ public class TokenGenerator : ITokenGenerator
         };
     }
 
-    public TokenRefresh GenerateRefreshToken(UserDb user)
+    public TokenRefresh GenerateRefreshToken()
     {
         DateTime expireTime = DateTime.UtcNow.AddMinutes(_configuration.RefreshTokenExpireMinutes);
         
