@@ -127,7 +127,7 @@ public class AuthController : ControllerBase
         CustomResult result = await _authenticator.LogoutAsync(logoutRequest.RefreshToken);
         if (!result.IsSuccess)
         {
-            return NotFound(result.Error);
+            return BadRequest(result.Error);
         }
 
         return Ok("Logout successfully completed");
