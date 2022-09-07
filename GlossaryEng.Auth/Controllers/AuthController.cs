@@ -56,7 +56,8 @@ public class AuthController : ControllerBase
             protocol: HttpContext.Request.Scheme);
 
         var customResult = await _emailSender.SendEmailAsync(user.Email, "Confirm Email",
-            $"Thank you for choosing GlossaryEng. To complete registration <a href={confirmUrl}>Click Here</a>");
+            "<h3>Thank you for choosing GlossaryEng</h3>." +
+            $"<p> To complete registration <a href={confirmUrl}>Click Here </a> </p>");
 
         if (!customResult.IsSuccess)
         {
