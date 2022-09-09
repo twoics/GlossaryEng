@@ -84,7 +84,6 @@ POST api/auth/login
 - id
 - email
 - name
-- role? // TODO
 
 #### Response codes
 

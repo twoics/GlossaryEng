@@ -10,7 +10,7 @@ namespace GlossaryEng.Auth.Services.TokenGenerator;
 
 public class TokenGenerator : ITokenGenerator
 {
-    private AuthenticationConfiguration _configuration;
+    private readonly AuthenticationConfiguration _configuration;
 
     public TokenGenerator(AuthenticationConfiguration configuration)
         => _configuration = configuration;
@@ -21,8 +21,7 @@ public class TokenGenerator : ITokenGenerator
         {
             new (JwtRegisteredClaimNames.Sub, user.Id),
             new (JwtRegisteredClaimNames.Email, user.Email),
-            new (JwtRegisteredClaimNames.Name, user.UserName),
-            // Todo add role claim
+            new (JwtRegisteredClaimNames.Name, user.UserName)
         };
         
         DateTime expireTime = DateTime.UtcNow.AddMinutes(_configuration.AccessTokenExpireMinutes);
