@@ -55,13 +55,14 @@ public class AuthController : ControllerBase
             },
             protocol: HttpContext.Request.Scheme);
 
-        var customResult = await _emailSender.SendEmailAsync(user.Email, "Confirm Email",
+        var sendEmailResult = await _emailSender.SendEmailAsync(user.Email, "Confirm Email",
             "<h3>Thank you for choosing GlossaryEng</h3>." +
             $"<p> To complete registration <a href={confirmUrl}>Click Here </a> </p>");
 
-        if (!customResult.IsSuccess)
+        if (!sendEmailResult.IsSuccess)
         {
-            return BadRequest(customResult.Error);
+            await _userManager.DeleteAsync(user);
+            return BadRequest(sendEmailResult.Error);
         }
 
         return Ok("User is successfully created. Email confirmation message sent to your email address");
